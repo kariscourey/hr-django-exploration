@@ -1,0 +1,120 @@
+<!-- LOGIC -->
+
+<h1>{{ recipe.title }}</h1>
+
+<!-- send_to_browser("<h1>" + recipe.title + "</h1>") -->
+
+{% if user.has_pet %}
+  <p>Pet: {{ user.pet.name }}</p>
+{% endif %}
+
+<!-- if user.has_pet:
+  send_to_browser("<p>Pet: " + user.pet.name + "</p>") -->
+
+
+{% for post in posts %}
+  <div>
+    <p>{{post.title}}</p>
+    <p>{{post.description}}</p>
+  </div>
+{% endfor %}
+
+<!-- for post into posts:
+  send_to_browser("<div>")
+  send_to_browser("<p>" + post.title + "</p>")
+  send_to_browser("<p>" + post.description + "</p>")
+  send_to_browser("</div>") -->
+
+
+<!-- TEMPLATE INHERITANCE -->
+
+{% extends "base.html" %}
+
+{% block some_content %}
+    <h1>{{post.title}}</h1>
+    <p>{{post.content}}</p>
+    <div class="tags">
+      {% for tag in post.tags.all %}
+        <div class="tag">{{ tag.name }}</div>
+      {% endfor %}
+    </div>
+{% endblock %}
+
+<!-- some_content = ""
+some_content += "<h1>" + post.title + "</h1>"
+some_content += "<p>" + post.content + "</p>"
+some_content += '<div class="tags">'
+
+for tag in post.tags.all():
+    some_content += '<div class="tag">' + tag.name + "</div>"
+
+some_content += "</div>" -->
+
+<!-- It just stores all of the HTML in a variable. Then, later, after that template has done all of its processing, Django loads the "parent" template and replaces the block in there with the contents of the variable. -->
+
+<main>
+    {% block some_content %}
+    {% endblock %}
+</main>
+
+<!-- send_to_browser("<main>")
+    send_to_browser(some_content)  # The variable from before
+    send_to_browser("</main>") -->
+
+
+<!-- TAGS -->
+
+<a href="/users/edit/5">Edit User</a>
+
+<a href="/users/edit/{{ user.id }}">Edit User<a/>
+
+<a href="{% url "user_edit" user %}">Edit User<a/>
+
+<!-- send_to_browser(
+    '<a href="' + django.url("user_edit", user) + '">Edit User<a/>'
+    ) -->
+
+{% csrf_token %}
+
+<!-- The csrf_token tag is there to put a secret value into our forms. It's basically just a tag that adds HTML to our output without us even having to see it. -->
+
+<!-- csrf_html = django.create_csrf(request)
+send_to_browser(csrf_html) -->
+
+
+<!-- FILTERS -->
+<!-- funcs that act on values; transform values; DONUT generate HTML like Django tags do -->
+
+<div>You have {{posts|length}} posts</div>
+
+<!-- send_to_browser("<div>You have " + len(posts) + " posts</div>") -->
+
+<div>Your first score is {{scores|first}}.</div>
+
+<!-- send_to_browser("<div>Your first score is " + scores[0] + ".</div>") -->
+
+<div>Published {{post.published_on|date:"D, M d, Y"}}
+
+<p>Your dog's name is {{dog.name|default_if_none:"???"}}</p>
+
+<!-- The view puts together a context for the template -->
+
+def simple_view(request):
+    context = {
+        "name": "Noor",
+        "friends": [
+            {"nickname": "Zahara"},
+            {"nickname": "Azami"},
+            {"nickname": "Kamal"},
+        ],
+    }
+    return render(request, "simple.html", context)
+
+<!-- The keys become "variables" in the template. Here's a small Django template script that would show Noor's name and the names of her friends. -->
+
+<h1>{{ name }}'s friends</h1>       <!-- references "name" -->
+<ul>
+  {% for friend in friends %}       <!-- references "friends" -->
+    <li>{{ friend.nickname }}</li>  <!-- references "nickname" in each dict -->
+  {% endfor %}
+</ul>
